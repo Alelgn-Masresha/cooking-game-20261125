@@ -95,8 +95,8 @@ export function drawEffects(ctx, fx) {
     const fade = 1 - p.age / p.life;
     ctx.beginPath();
     if (p.color === 'steam') {
-      ctx.fillStyle = `rgba(255, 255, 255, ${0.22 * fade})`;
-      ctx.arc(p.x, p.y, p.r * (1 + p.age), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${0.12 * fade})`;
+      ctx.arc(p.x, p.y, p.r * (1 + p.age * 0.6), 0, Math.PI * 2);
     } else {
       ctx.globalAlpha = fade;
       ctx.fillStyle = p.color;
