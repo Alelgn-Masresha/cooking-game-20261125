@@ -13,13 +13,20 @@ import { buildDossier } from './vendor/makefun-game.ts';
 const repo = fileURLToPath(new URL('.', import.meta.url));
 const output = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
-/** The grader collects /output as another user: every folder 0755 and every file 0644. */
+/**
+ * The grader collects /output as another user, so everything this program wrote there is made readable:
+ * folders 0755, files 0644. /output itself belongs to the grader (this program runs as an unprivileged
+ * user that may not chmod it), so it is left alone, and any chmod the system refuses is skipped.
+ */
 function makeReadable(dir: string): void {
-  chmodSync(dir, 0o755);
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
+    try {
+      chmodSync(path, entry.isDirectory() ? 0o755 : 0o644);
+    } catch {
+      // Not ours to change; the copy keeps the repository's own (readable) modes.
+    }
     if (entry.isDirectory()) makeReadable(path);
-    else chmodSync(path, 0o644);
   }
 }
 
